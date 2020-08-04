@@ -1,0 +1,51 @@
+
+// Initialization block
+{
+  const {buildAndNode,buildOrNode,buildNotNode,buildLiteralNode} = options
+}
+
+start =OrExpression
+
+OrExpression 
+  = left: AndExpression Or right: OrExpression{
+    return buildOrNode(left,right);
+  }
+  / AndExpression
+
+AndExpression
+ = left : NotExpression And right: AndExpression{
+   return buildAndNode(left,right);
+ }
+  / NotExpression
+
+NotExpression
+ = Not expression:SubExpression{
+   return buildNotNode(expression);
+ } / SubExpression
+
+//list
+SubExpression 
+  = '(' Space* expression:OrExpression Space*')'{
+    return expression;
+  }
+  / Literal
+
+Literal = Space* literal:$([A-Z]+) {
+  return buildLiteralNode(literal.trim());
+}
+
+
+
+Or "OR"
+  = Space+ 'or'i Space+
+  
+And "AND"
+  = Space+ 'and'i Space+
+  
+Not "NOT"
+  = 'not'i Space+
+
+Space "whitespace"
+  = [\ \t\r\n]
+
+

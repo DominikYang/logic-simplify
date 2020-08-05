@@ -4,6 +4,12 @@ export class Literal {
   constructor(parameter:string) {
     this.parameter = parameter;
   }
+
+  
+  public get param() : string {
+    return this.parameter;
+  }
+  
 }
 
 export function buildLiteralNode(parameter: string) {

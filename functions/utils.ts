@@ -5,18 +5,19 @@ import { buildNotNode, Not } from "../logic/not";
 import { buildLiteralNode, Literal } from "../logic/literal";
 import { Xor } from "../logic/xor";
 
+
 //解析传入的字符串，解析成特定的构造模式
 export function parseString(expression: string) {
   return parse(expression, { buildAndNode, buildOrNode, buildNotNode, buildLiteralNode });
 }
 
+//获取表达式中的符号量
 export function findPredicates(expression: And | Or | Not | Literal | Xor) {
   let findSet = new Set<string>();
   findLiteral(expression, findSet);
   return findSet;
 }
 
-//获取表达式中的符号量
 function findLiteral(expression: And | Or | Not | Literal | Xor, set: Set<string>) {
   if (expression instanceof Literal) {
     set.add(expression.param);
@@ -81,4 +82,19 @@ function sift(length: number, list: Array<number>, fullList: Array<Array<number>
     sift(length, list, fullList);
     list.pop();
   }
+}
+
+export function range(start:number,stop:number,step:number) : Array<number>{
+  let res = Array.from({ length: (stop - start) / step + 1 }, (_, i) => start + (i * step));
+  return res;
+}
+
+export function contains(arr:Array<Array<number>>,a:Array<number>) {
+  for (let i = 0; i < arr.length; i++) {
+    const element = arr[i];
+    if (JSON.stringify(element) == JSON.stringify(a)) {
+      return true;
+    }
+  }
+  return false;
 }

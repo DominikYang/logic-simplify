@@ -1,13 +1,13 @@
-import { parseString, findPredicates } from "./utils";
-
+import { parseString, findPredicates, getTruthTable, contains } from "./utils";
+import * as _ from 'lodash';
+import { range } from "lodash";
 export function simplyfyLogic(expression: string, form: string) {
   let expr = parseString(expression);
   //筛选出literal类型的元素，添加到set里面
   let predicatesSet = findPredicates(expr);
   //构造真值表（最小项添加进真值表中）
-  let truthTable = [];
   //返回SOP或POS
-  
+
 }
 
 export function SOPform(variables: string[], minterms: any[]) {
@@ -16,4 +16,58 @@ export function SOPform(variables: string[], minterms: any[]) {
 
 export function POSform(variables: string[], minterms: any[]) {
   //算法具体实现
+}
+
+export function simplyfiedPairs(terms: Array<Array<number>>) {
+  let simplifiedTerms = new Array<Array<number>>();
+  let todo = range(0, terms.length, 1)
+  console.log(todo);
+  
+
+  for (let i = 0; i < terms.length - 1; i++) {
+    for (let j_i = i + 1; j_i < terms.length; j_i++) {
+      let index = checkPair(terms[i], terms[j_i]);
+      // console.log(index);
+      
+      if (index != -1) {
+        todo[i] = todo[j_i] = undefined;
+        console.log(todo);
+        
+        let newterm = new Array<number>(...terms[i]);
+        newterm[index] = 3;
+        if (!contains(simplifiedTerms,newterm)) {
+          simplifiedTerms.push(new Array(...newterm));
+        }
+        //  console.log(simplifiedTerms);
+      }
+    }
+  }
+
+  for (let i = 0; i < todo.length; i++) {
+    const element = todo[i];
+    if (element != undefined) {
+      simplifiedTerms.push(new Array(...terms[i]));
+    }
+  }
+
+  return simplifiedTerms;
+}
+
+export function checkPair(minterm1: Array<number>, minterm2: Array<number>) {
+  let index = -1;
+  for (let x = 0; x < minterm1.length; x++) {
+    if (minterm1[x] != minterm2[x]) {
+      if (index == -1) {
+        index = x;
+      } else {
+        return -1;
+      }
+    }
+  }
+  return index;
+}
+
+function remRedundancy(l1: Array<Array<number>>, terms: Array<Array<number>>) {
+  let dommatrix = [];
+
 }

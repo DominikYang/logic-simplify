@@ -84,11 +84,6 @@ function sift(length: number, list: Array<number>, fullList: Array<Array<number>
   }
 }
 
-export function range(start:number,stop:number,step:number) : Array<number>{
-  let res = Array.from({ length: (stop - start) / step + 1 }, (_, i) => start + (i * step));
-  return res;
-}
-
 export function contains(arr:Array<Array<number>>,a:Array<number>) {
   for (let i = 0; i < arr.length; i++) {
     const element = arr[i];

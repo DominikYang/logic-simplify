@@ -130,7 +130,16 @@ function remRedundancy(l1: Array<Array<number>>, terms: Array<Array<number>>) {
             }
             dommatrix[row2i] = new Array(...temp);
             //if all
-
+            let tBool = true;
+            for (let i = 0; i < dommatrix[rowi].length; i++) {
+              if (dommatrix[row2i][i] < dommatrix[rowi][i]) {
+                tBool = false;
+                break;
+              }
+            }
+            if (tBool) {
+              ndTerms[row2i] = undefined;
+            }
           }
         }
       }
@@ -166,6 +175,15 @@ function remRedundancy(l1: Array<Array<number>>, terms: Array<Array<number>>) {
             }
             col2 = new Array(...temp);
             //if all
+            let tBool = true;
+            for (let i = 0; i < col.length; i++) {
+              if (col[i] < col2[i]) {
+                tBool = false;
+              }
+            }
+            if (tBool) {
+              ndPrimeImplicants[col2i] = undefined;
+            }
           }
         }
       }

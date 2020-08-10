@@ -82,7 +82,8 @@ function checkPair(minterm1: Array<number>, minterm2: Array<number>) {
  * @param terms 最小项或最大项表
  */
 function remRedundancy(l1: Array<Array<number>>, terms: Array<Array<number>>) {
-  let dommatrix: number[][] = [];
+  if (terms.length != 0) {
+    let dommatrix: number[][] = [];
   for (let i = 0; i < terms.length; i++) {
     let temp = [];
     for (let j = 0; j < l1.length; j++) {
@@ -101,7 +102,7 @@ function remRedundancy(l1: Array<Array<number>>, terms: Array<Array<number>>) {
 
   let ndPrimeImplicants = _.range(0, l1.length, 1);
   let ndTerms = _.range(0, terms.length, 1);
-  
+
   let oldNdTerms = [];
   let oldNdPrimeImplicants = [];
 
@@ -109,47 +110,78 @@ function remRedundancy(l1: Array<Array<number>>, terms: Array<Array<number>>) {
     || (JSON.stringify(ndPrimeImplicants) != JSON.stringify(oldNdPrimeImplicants))) {
     oldNdTerms = new Array(...ndTerms);
     oldNdPrimeImplicants = new Array(...ndPrimeImplicants);
-    
+
     for (let rowi = 0; rowi < dommatrix.length; rowi++) {
       if (ndTerms[rowi] != undefined) {
         let temp = []
-          for (let _ = 0; _ < ndPrimeImplicants.length; _++) {
-            if (ndPrimeImplicants[_] != undefined) {
-              temp.push(dommatrix[ndPrimeImplicants[_]]);
-            }
+        for (let _ = 0; _ < ndPrimeImplicants.length; _++) {
+          if (ndPrimeImplicants[_] != undefined) {
+            temp.push(dommatrix[ndPrimeImplicants[_]]);
+          }
         }
         dommatrix[rowi] = new Array(...temp);
-        }
-      for (let row2i = 0; row2i < dommatrix.length; row2i++) {
-        if (rowi != row2i && ndTerms[row2i] != undefined) {
-          let temp = [];
-          for (let _ = 0; _ < ndPrimeImplicants.length; _++) {
-            if (ndPrimeImplicants[_] != undefined) {
-              temp.push(dommatrix[ndPrimeImplicants[_]]);
+        for (let row2i = 0; row2i < dommatrix.length; row2i++) {
+          if (rowi != row2i && ndTerms[row2i] != undefined) {
+            let temp = [];
+            for (let _ = 0; _ < ndPrimeImplicants.length; _++) {
+              if (ndPrimeImplicants[_] != undefined) {
+                temp.push(dommatrix[ndPrimeImplicants[_]]);
+              }
             }
+            dommatrix[row2i] = new Array(...temp);
+            //if all
+
           }
-          dommatrix[row2i] = new Array(...temp);
-          //if
         }
       }
     }
-    
-    
     let colLen = _.range(0, l1.length, 1);
     for (let coli = 0; coli < colLen.length; coli++) {
       if (ndPrimeImplicants[coli] != undefined) {
         let col = [];
         let colRange = _.range(terms.length);
         for (let a = 0; a < colRange.length; a++) {
-          col.push(dommatrix[a][coli]);
+          col.push(dommatrix[colRange[a]][coli]);
         }
+        let temp = [];
         for (let _ = 0; _ < oldNdTerms.length; _++) {
           if (oldNdTerms[_] != undefined) {
-            // col.push()
+            temp.push(col[oldNdTerms[_]]);
+          }
+        }
+        col = new Array(...temp);
+        let l1Range = _.range(0, l1.length, 1);
+        for (let col2i = 0; col2i < l1Range.length; col2i++) {
+          if (coli != col2i && ndPrimeImplicants[col2i] != undefined) {
+            let col2 = [];
+            let termRange = _.range(0, terms.length, 1);
+            for (let a = 0; a < termRange.length; a++) {
+              col2.push(dommatrix[termRange[a]][col2i]);
+            }
+            let temp = [];
+            for (let _ = 0; _ < oldNdTerms.length; _++) {
+              if (oldNdTerms[_] != undefined) {
+                temp.push(col2[oldNdTerms[_]]);
+              }
+            }
+            col2 = new Array(...temp);
+            //if all
           }
         }
       }
     }
+  }
+
+  let temp = [];
+  for (let _ = 0; _ < ndPrimeImplicants.length; _++) {
+    if (ndPrimeImplicants[_] != undefined) {
+      temp.push(l1[ndPrimeImplicants[_]]);
+    }
+  }
+  l1 = new Array(...temp);
+  return l1;
+  } else {
+    return [];
   }
 }
 
@@ -166,5 +198,3 @@ function compareTerm(minterm, term): boolean {
   }
   return true;
 }
-
-remRedundancy([[3, 3, 1], [0, 0, 3]], [[0, 0, 0], [0, 0, 1], [0, 1, 1], [1, 0, 1], [1, 1, 1]]);

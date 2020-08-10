@@ -93,3 +93,37 @@ export function contains(arr:Array<Array<number>>,a:Array<number>) {
   }
   return false;
 }
+
+export function toOrList(lists: string[]) {
+  let temp = '';
+  if (lists.length == 0) {
+    throw Error('can\'t cast empty list');
+  }
+  temp += lists[0];
+  if (lists.length == 1) {
+    return temp;
+  }
+  for (let i = 1; i < lists.length; i++) {
+    temp += ' or ' + lists[i];
+  }
+
+  temp = '(' + temp + ')';
+  return temp;
+}
+
+export function toAndList(lists: string[]) {
+  let temp = '';
+  if (lists.length == 0) {
+    throw Error('can\'t cast empty list');
+  }
+  temp += lists[0];
+  if (lists.length == 1) {
+    return temp;
+  }
+  for (let i = 1; i < lists.length; i++) {
+    temp += ' and ' + lists[i];
+  }
+
+  temp = '(' + temp + ')';
+  return temp;
+}

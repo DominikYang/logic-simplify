@@ -1,14 +1,10 @@
-import { parseString, findPredicates, getTruthTable, contains, toAndList, toOrList, fullPerm } from "./utils";
+import { getTruthTable, contains, toAndList, toOrList, fullPerm } from "./utils";
 import * as _ from 'lodash';
-export function simplyfyLogic(expression: string, form: string) {
-  let expr = parseString(expression);
-  //筛选出literal类型的元素，添加到set里面
-  let predicatesSet = findPredicates(expr);
-  let predicates = Array.from(predicatesSet);
-  //构造真值表（最小项添加进真值表中）
-  console.log(Array.from(predicatesSet));
-  let minterms = getTruthTable(predicates, expr);
-  //返回SOP或POS
+
+
+export function simplyfyLogic(expression: any, form: string,predicates:string[]) {
+  //get truthtable with minterms
+  let minterms = getTruthTable(predicates, expression);
   if (form == 'dnf') {
     return SOPform(predicates, minterms);
   }
@@ -22,12 +18,13 @@ export function SOPform(variables: string[], minterms: any[]) {
     oldTerm = new Array(...newTerm);
     newTerm = new Array(...simplyfiedPairs(oldTerm));
   }
-
+  //get final simplyfied table
   let essential = new Array(...remRedundancy(newTerm, minterms));
   let andList = [];
   for (let i = 0; i < essential.length; i++) {
     andList.push(convertToVarsSOP(essential[i],variables));
   }
+  //return string like '(A and B) or (C and D)'
   let result = toOrList(andList);
   result = result.substring(1, result.length - 1);
   return result;
@@ -35,6 +32,8 @@ export function SOPform(variables: string[], minterms: any[]) {
 
 export function POSform(variables: string[], minterms: any[]) {
   let fullList = fullPerm(variables.length);
+  
+  // maxterms = fullTerms - minterms
   let maxterms = [];
   for (let i = 0; i < fullList.length; i++) {
     if (!contains(minterms, fullList[i])) {
@@ -48,26 +47,25 @@ export function POSform(variables: string[], minterms: any[]) {
     oldTerm = new Array(...newTerm);
     newTerm = new Array(...simplyfiedPairs(oldTerm));
   }
-  
+  //get final simplyfied table
   let essential = new Array(...remRedundancy(newTerm, maxterms));
   let orList = [];
   for (let i = 0; i < essential.length; i++) {
     orList.push(convertToVarsPOS(essential[i],variables));
   }
+  //return string like '(A or B) and (C or D)'
   let result = toAndList(orList);
   result = result.substring(1, result.length - 1);
   return result;
 }
 
 /**
- * 化简表达式
- * @param terms 需要化简的真值表
+ * simplify expression
+ * @param terms table needs to simplify 
  */
 export function simplyfiedPairs(terms: Array<Array<number>>) {
   let simplifiedTerms = new Array<Array<number>>();
   let todo = _.range(0, terms.length, 1)
-  // console.log(todo);
-
   for (let i = 0; i < terms.length - 1; i++) {
     for (let j_i = i + 1; j_i < terms.length; j_i++) {
       let index = checkPair(terms[i], terms[j_i]);
@@ -75,7 +73,7 @@ export function simplyfiedPairs(terms: Array<Array<number>>) {
         todo[i] = todo[j_i] = undefined;
         let newterm = new Array<number>(...terms[i]);
         newterm[index] = 3;
-
+        //add unsimplified terms to result
         if (!contains(simplifiedTerms, newterm)) {
           simplifiedTerms.push(new Array(...newterm));
         }
@@ -95,9 +93,10 @@ export function simplyfiedPairs(terms: Array<Array<number>>) {
 }
 
 /**
- * 检查两个数组是否只有一个位置的元素不同
- * @param minterm1 第一个数组
- * @param minterm2 第二个数组
+ * check every index whether only one different value between two array
+ * these two array must have same length
+ * @param minterm1 array one
+ * @param minterm2 array two
  */
 function checkPair(minterm1: Array<number>, minterm2: Array<number>) {
   let index = -1;
@@ -265,6 +264,7 @@ function convertToVarsSOP(minterm: number[], variables: string[]) {
     } else if (minterm[i] == 1) {
       temp.push(variables[i]);
     }
+    // ignore 3
   }
   return toAndList(temp);
 }
@@ -278,5 +278,6 @@ function convertToVarsPOS(maxterm: number[], variables: string[]) {
       temp.push(variables[i]);
     }
   }
+  //ignore 3
   return toOrList(temp);
 }

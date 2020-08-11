@@ -34,7 +34,6 @@ function findLiteral(expression: And | Or | Not | Literal | Xor, set: Set<string
 
 export function getTruthTable(variables: string[], expression: And | Or | Not | Literal | Xor) {
   let truthTable:Array<Array<number>> = [];
-  //0,1全排列，根据全排列去生成map，然后获取真值，建立最小项真值表
   let fullList = fullPerm(variables.length);
   for (let i = 0; i < fullList.length; i++) {
     let map = new Map<string, boolean>();
@@ -50,8 +49,7 @@ export function getTruthTable(variables: string[], expression: And | Or | Not | 
 }
 
 
-//根据输入的值返回表达式的真值
-export function getTruthValue(expression: And | Or | Not | Literal | Xor, literalMap: Map<string, boolean>) {
+function getTruthValue(expression: And | Or | Not | Literal | Xor, literalMap: Map<string, boolean>) {
   if (expression instanceof Literal) {
     return literalMap.get(expression.param);
   } else if (expression instanceof And) {
@@ -61,9 +59,10 @@ export function getTruthValue(expression: And | Or | Not | Literal | Xor, litera
   } else if (expression instanceof Not) {
     return !getTruthValue(expression.param, literalMap);
   }
-  //todo Xor
+  //todo Xor(unnecessary)
 }
 
+// generate full permutation with 0,1
 export function fullPerm(length: number) {
   let fullList: Array<Array<number>> = [];
   let list: Array<number> = [];

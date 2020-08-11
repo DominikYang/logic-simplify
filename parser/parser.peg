@@ -30,9 +30,9 @@ SubExpression
   }
   / Literal
 
-Literal = Space* literal:$([A-Z]+) {
+Literal = Space* literal:$(.+) {
   return buildLiteralNode(literal.trim());
-}
+} 
 
 
 
@@ -47,5 +47,3 @@ Not "NOT"
 
 Space "whitespace"
   = [\ \t\r\n]
-
-

@@ -6,12 +6,12 @@ import { buildLiteralNode, Literal } from "../logic/literal";
 import { Xor } from "../logic/xor";
 
 
-//解析传入的字符串，解析成特定的构造模式
+//parse tht query string to typescript pojo
 export function parseString(expression: string) {
   return parse(expression, { buildAndNode, buildOrNode, buildNotNode, buildLiteralNode });
 }
 
-//获取表达式中的符号量
+//get the literal predicats in the expression
 export function findPredicates(expression: And | Or | Not | Literal | Xor) {
   let findSet = new Set<string>();
   findLiteral(expression, findSet);
@@ -47,7 +47,6 @@ export function getTruthTable(variables: string[], expression: And | Or | Not | 
   }
   return truthTable;
 }
-
 
 function getTruthValue(expression: And | Or | Not | Literal | Xor, literalMap: Map<string, boolean>) {
   if (expression instanceof Literal) {

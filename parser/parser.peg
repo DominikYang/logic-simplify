@@ -4,7 +4,7 @@
   const {buildAndNode,buildOrNode,buildNotNode,buildLiteralNode} = options
 }
 
-start =OrExpression
+start = OrExpression
 
 OrExpression 
   = left: AndExpression Or right: OrExpression{
@@ -28,13 +28,74 @@ SubExpression
   = '(' Space* expression:OrExpression Space*')'{
     return expression;
   }
-  / Literal
+  / ValueExpression
 
-Literal = Space* literal:$(.+) {
-  return buildLiteralNode(literal.trim());
-} 
+ValueExpression
+  = FieldValueExpression
 
+Field "fieldName"
+  = Literal
 
+Literal "literal"
+  = QuotedString / UnquotedLiteral
+
+FieldValueExpression
+  = field:Field Space* ':' Space* partial:ListOfValues {
+    return buildLiteralNode(field + ' : ' + partial);
+  }
+
+ListOfValues
+  = '(' Space* partial:OrListOfValues trailing:OptionalSpace ')' {
+    return '(' + partial +')';
+  }
+    / Value
+
+OrListOfValues
+  = partialLeft:AndListOfValues Or partialRight:OrListOfValues {
+    return partialLeft + ' or ' + partialRight;
+  }
+  / AndListOfValues
+  
+AndListOfValues
+  = partialLeft:NotListOfValues And partialRight:AndListOfValues {
+    return partialLeft + ' and ' + partialRight;
+  }
+  / NotListOfValues
+
+NotListOfValues
+  = Not partial:ListOfValues {
+    return 'not ' + partial;
+  }
+  / ListOfValues
+
+Value "value"
+  = value:QuotedString {
+    return value;
+  }
+  / value:UnquotedLiteral {
+    return value;
+  }
+
+QuotedString
+  = '"' chars:QuotedCharacter* '"' {
+    return "\"" + chars.join('') + "\"";
+  }
+
+QuotedCharacter
+  = EscapedWhitespace
+  / '\\' char:[\\"] { return char; }
+  / char:[^"] { return char; }
+
+UnquotedLiteral
+  = chars:UnquotedCharacter+ {
+    return chars.join('').trim();
+  }
+
+UnquotedCharacter
+  = EscapedWhitespace
+  / EscapedSpecialCharacter
+  / EscapedKeyword
+  / !SpecialCharacter !Keyword  char:. { return char; }
 
 Or "OR"
   = Space+ 'or'i Space+
@@ -47,3 +108,23 @@ Not "NOT"
 
 Space "whitespace"
   = [\ \t\r\n]
+
+EscapedWhitespace
+  = '\\t' { return '\t'; }
+  / '\\r' { return '\r'; }
+  / '\\n' { return '\n'; }
+
+EscapedSpecialCharacter
+  = '\\' char:SpecialCharacter { return char; }
+  
+SpecialCharacter
+  = [\\():<>"*{}]
+
+EscapedKeyword
+  = '\\' keyword:('or'i / 'and'i / 'not'i) { return keyword; }
+
+Keyword
+  = Or / And / Not
+  
+ OptionalSpace
+  =  Space*

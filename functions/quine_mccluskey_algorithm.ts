@@ -1,10 +1,23 @@
-import { getTruthTable, contains, toAndList, toOrList, fullPerm } from "./utils";
+import { getTruthTable, contains, toAndList, toOrList, fullPerm, parseString, findPredicates } from "./utils";
 import * as _ from 'lodash';
+import { ParseError } from "../error/parse_error";
 
 
-export function simplyfyLogic(expression: any, form: string,predicates:string[]) {
+export function simplyfyLogic(expression: string, form: string, limit: number) {
+  let expr: any;
+  try {
+    expr = parseString(expression);
+    console.log(expr);
+  } catch (error) {
+    throw new ParseError(error, expression);
+  }
+  let predicatesSet = findPredicates(expr);
+  let predicates = Array.from(predicatesSet);
+  if (predicates.length > limit) {
+    throw new Error('predicates size is larger than limit value');
+  }
   //get truthtable with minterms
-  let minterms = getTruthTable(predicates, expression);
+  let minterms = getTruthTable(predicates, expr);
   if (form == 'dnf') {
     return SOPform(predicates, minterms);
   }
@@ -22,7 +35,7 @@ export function SOPform(variables: string[], minterms: any[]) {
   let essential = new Array(...remRedundancy(newTerm, minterms));
   let andList = [];
   for (let i = 0; i < essential.length; i++) {
-    andList.push(convertToVarsSOP(essential[i],variables));
+    andList.push(convertToVarsSOP(essential[i], variables));
   }
   //return string like '(A and B) or (C and D)'
   let result = toOrList(andList);
@@ -32,7 +45,7 @@ export function SOPform(variables: string[], minterms: any[]) {
 
 export function POSform(variables: string[], minterms: any[]) {
   let fullList = fullPerm(variables.length);
-  
+
   // maxterms = fullTerms - minterms
   let maxterms = [];
   for (let i = 0; i < fullList.length; i++) {
@@ -47,11 +60,15 @@ export function POSform(variables: string[], minterms: any[]) {
     oldTerm = new Array(...newTerm);
     newTerm = new Array(...simplyfiedPairs(oldTerm));
   }
+  console.log(oldTerm);
+  
   //get final simplyfied table
   let essential = new Array(...remRedundancy(newTerm, maxterms));
+  //console.log(essential);
+  
   let orList = [];
   for (let i = 0; i < essential.length; i++) {
-    orList.push(convertToVarsPOS(essential[i],variables));
+    orList.push(convertToVarsPOS(essential[i], variables));
   }
   //return string like '(A or B) and (C or D)'
   let result = toAndList(orList);
@@ -114,16 +131,15 @@ function checkPair(minterm1: Array<number>, minterm2: Array<number>) {
 
 
 /**
- * 求本质蕴涵项目
- * @param l1 素蕴含项
- * @param terms 最小项或最大项表
+ * get the essential arguments
+ * @param l1 prime implicant
+ * @param terms minterms or maxterms
  */
 function remRedundancy(l1: Array<Array<number>>, terms: Array<Array<number>>) {
   if (terms.length != 0) {
     let dommatrix: number[][] = [];
     for (let i = 0; i < terms.length; i++) {
       let temp = [];
-
       for (let j = 0; j < l1.length; j++) {
         temp.push(0);
       }
@@ -142,11 +158,12 @@ function remRedundancy(l1: Array<Array<number>>, terms: Array<Array<number>>) {
     let ndPrimeImplicants = _.range(0, l1.length, 1);
     let ndTerms = _.range(0, terms.length, 1);
 
-    let oldNdTerms = [];
-    let oldNdPrimeImplicants = [];
+    let oldNdTerms = undefined;
+    let oldNdPrimeImplicants = undefined;
 
     while ((JSON.stringify(ndTerms) != JSON.stringify(oldNdTerms))
       || (JSON.stringify(ndPrimeImplicants) != JSON.stringify(oldNdPrimeImplicants))) {
+      
       oldNdTerms = new Array(...ndTerms);
       oldNdPrimeImplicants = new Array(...ndPrimeImplicants);
 
@@ -173,7 +190,6 @@ function remRedundancy(l1: Array<Array<number>>, terms: Array<Array<number>>) {
               for (let i = 0; i < dommatrix[rowi].length; i++) {
                 if (dommatrix[row2i][i] < dommatrix[rowi][i]) {
                   tBool = false;
-                  break;
                 }
               }
               if (tBool) {
@@ -242,11 +258,6 @@ function remRedundancy(l1: Array<Array<number>>, terms: Array<Array<number>>) {
   }
 }
 
-/**
- * 识别素蕴含项
- * @param minterm 最小项
- * @param term 素蕴涵项
- */
 function compareTerm(minterm, term): boolean {
   for (let i = 0; i < term.length; i++) {
     if (term[i] != 3 && term[i] != minterm[i]) {

@@ -7,7 +7,7 @@ export function simplyfyLogic(expression: string, form: string, limit: number) {
   let expr: any;
   try {
     expr = parseString(expression);
-    console.log(expr);
+    // console.log(expr);
   } catch (error) {
     throw new ParseError(error, expression);
   }
@@ -57,15 +57,15 @@ export function POSform(variables: string[], minterms: any[]) {
   let oldTerm = [];
   let newTerm = new Array(...maxterms);
   while (JSON.stringify(newTerm) != JSON.stringify(oldTerm)) {
-    oldTerm = new Array(...newTerm);
+    oldTerm = _.cloneDeep(newTerm);
     newTerm = new Array(...simplyfiedPairs(oldTerm));
   }
-  console.log(oldTerm);
-  
+  // console.log(oldTerm);
+
   //get final simplyfied table
   let essential = new Array(...remRedundancy(newTerm, maxterms));
   //console.log(essential);
-  
+
   let orList = [];
   for (let i = 0; i < essential.length; i++) {
     orList.push(convertToVarsPOS(essential[i], variables));
@@ -156,16 +156,26 @@ function remRedundancy(l1: Array<Array<number>>, terms: Array<Array<number>>) {
     }
 
     let ndPrimeImplicants = _.range(0, l1.length, 1);
+    // console.log(ndPrimeImplicants);
     let ndTerms = _.range(0, terms.length, 1);
+    // console.log(ndTerms);
 
-    let oldNdTerms = undefined;
-    let oldNdPrimeImplicants = undefined;
 
-    while ((JSON.stringify(ndTerms) != JSON.stringify(oldNdTerms))
-      || (JSON.stringify(ndPrimeImplicants) != JSON.stringify(oldNdPrimeImplicants))) {
-      
-      oldNdTerms = new Array(...ndTerms);
-      oldNdPrimeImplicants = new Array(...ndPrimeImplicants);
+    let oldNdTerms = [];
+    let oldNdPrimeImplicants = [];
+
+    // (JSON.stringify(ndTerms) != JSON.stringify(oldNdTerms)
+    // (JSON.stringify(ndPrimeImplicants) != JSON.stringify(oldNdPrimeImplicants)
+    while ((!_.isEqual(ndTerms, oldNdTerms))
+      || !_.isEqual(ndPrimeImplicants, oldNdPrimeImplicants)) {
+
+      // oldNdTerms = new Array(...ndTerms);
+      oldNdTerms = _.cloneDeep(ndTerms);
+      // console.log(oldNdTerms);
+
+      // oldNdPrimeImplicants = new Array(...ndPrimeImplicants);
+      oldNdPrimeImplicants = _.cloneDeep(ndPrimeImplicants);
+      // console.log(oldNdPrimeImplicants);
 
       for (let rowi = 0; rowi < dommatrix.length; rowi++) {
         if (ndTerms[rowi] != undefined) {

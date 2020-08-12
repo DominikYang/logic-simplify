@@ -21,6 +21,7 @@
     "logic-rule": "^1.0.1",
     "pegjs": "^0.10.0",
     "ts-jest": "^26.1.4",
+    "ts-node": "^8.10.2",
     "typescript": "^3.9.7"
   }
 }

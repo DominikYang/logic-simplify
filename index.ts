@@ -1,6 +1,7 @@
 import { findPredicates, parseString } from "./functions/utils";
 import { simplyfyLogic } from "./functions/quine_mccluskey_algorithm";
 import { ParseError } from "./error/parse_error";
+import { timeLog } from "console";
 
 
 /**
@@ -20,3 +21,5 @@ export function toCNF(expression: string, limit: number = 8) {
 export function toDNF(expression: string, limit: number = 8) {
   return simplyfyLogic(expression.trim(), 'dnf', limit);
 }
+
+console.log(toCNF('A:foo'));

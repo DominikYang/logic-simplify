@@ -26,13 +26,15 @@ export function simplyfyLogic(expression: string, form: string, limit: number) {
 
 export function SOPform(variables: string[], minterms: any[]) {
   let oldTerm = [];
-  let newTerm = new Array(...minterms);
+  let newTerm = _.cloneDeep(minterms);
   while (JSON.stringify(newTerm) != JSON.stringify(oldTerm)) {
-    oldTerm = new Array(...newTerm);
-    newTerm = new Array(...simplyfiedPairs(oldTerm));
+    oldTerm = _.cloneDeep(newTerm);
+    newTerm = _.cloneDeep(simplyfiedPairs(oldTerm));
   }
   //get final simplyfied table
-  let essential = new Array(...remRedundancy(newTerm, minterms));
+  let essential = remRedundancy(newTerm, minterms);
+  console.log(essential);
+
   let andList = [];
   for (let i = 0; i < essential.length; i++) {
     andList.push(convertToVarsSOP(essential[i], variables));
@@ -50,21 +52,21 @@ export function POSform(variables: string[], minterms: any[]) {
   let maxterms = [];
   for (let i = 0; i < fullList.length; i++) {
     if (!contains(minterms, fullList[i])) {
-      maxterms.push(new Array(...fullList[i]));
+      maxterms.push(_.cloneDeep(fullList[i]));
     }
   }
 
   let oldTerm = [];
-  let newTerm = new Array(...maxterms);
+  let newTerm = _.cloneDeep(maxterms);
   while (JSON.stringify(newTerm) != JSON.stringify(oldTerm)) {
     oldTerm = _.cloneDeep(newTerm);
-    newTerm = new Array(...simplyfiedPairs(oldTerm));
+    newTerm = _.cloneDeep(simplyfiedPairs(oldTerm));
   }
   // console.log(oldTerm);
 
   //get final simplyfied table
-  let essential = new Array(...remRedundancy(newTerm, maxterms));
-  //console.log(essential);
+  let essential = remRedundancy(newTerm, maxterms);
+  console.log(essential);
 
   let orList = [];
   for (let i = 0; i < essential.length; i++) {
@@ -88,11 +90,11 @@ export function simplyfiedPairs(terms: Array<Array<number>>) {
       let index = checkPair(terms[i], terms[j_i]);
       if (index != -1) {
         todo[i] = todo[j_i] = undefined;
-        let newterm = new Array<number>(...terms[i]);
+        let newterm = _.cloneDeep(terms[i]);
         newterm[index] = 3;
         //add unsimplified terms to result
         if (!contains(simplifiedTerms, newterm)) {
-          simplifiedTerms.push(new Array(...newterm));
+          simplifiedTerms.push(_.cloneDeep(newterm));
         }
       }
     }
@@ -102,7 +104,7 @@ export function simplyfiedPairs(terms: Array<Array<number>>) {
     const element = todo[i];
 
     if (element != undefined) {
-      simplifiedTerms.push(new Array(...terms[i]));
+      simplifiedTerms.push(_.cloneDeep(terms[i]));
     }
   }
 
@@ -136,6 +138,7 @@ function checkPair(minterm1: Array<number>, minterm2: Array<number>) {
  * @param terms minterms or maxterms
  */
 function remRedundancy(l1: Array<Array<number>>, terms: Array<Array<number>>) {
+  
   if (terms.length != 0) {
     let dommatrix: number[][] = [];
     for (let i = 0; i < terms.length; i++) {
@@ -143,7 +146,7 @@ function remRedundancy(l1: Array<Array<number>>, terms: Array<Array<number>>) {
       for (let j = 0; j < l1.length; j++) {
         temp.push(0);
       }
-      dommatrix.push(new Array(...temp));
+      dommatrix.push(_.cloneDeep(temp));
     }
 
     for (let primei = 0; primei < l1.length; primei++) {
@@ -156,9 +159,7 @@ function remRedundancy(l1: Array<Array<number>>, terms: Array<Array<number>>) {
     }
 
     let ndPrimeImplicants = _.range(0, l1.length, 1);
-    // console.log(ndPrimeImplicants);
     let ndTerms = _.range(0, terms.length, 1);
-    // console.log(ndTerms);
 
 
     let oldNdTerms = [];
@@ -168,14 +169,8 @@ function remRedundancy(l1: Array<Array<number>>, terms: Array<Array<number>>) {
     // (JSON.stringify(ndPrimeImplicants) != JSON.stringify(oldNdPrimeImplicants)
     while ((!_.isEqual(ndTerms, oldNdTerms))
       || !_.isEqual(ndPrimeImplicants, oldNdPrimeImplicants)) {
-
-      // oldNdTerms = new Array(...ndTerms);
       oldNdTerms = _.cloneDeep(ndTerms);
-      // console.log(oldNdTerms);
-
-      // oldNdPrimeImplicants = new Array(...ndPrimeImplicants);
       oldNdPrimeImplicants = _.cloneDeep(ndPrimeImplicants);
-      // console.log(oldNdPrimeImplicants);
 
       for (let rowi = 0; rowi < dommatrix.length; rowi++) {
         if (ndTerms[rowi] != undefined) {
@@ -185,7 +180,7 @@ function remRedundancy(l1: Array<Array<number>>, terms: Array<Array<number>>) {
               temp.push(dommatrix[rowi][ndPrimeImplicants[_]]);
             }
           }
-          dommatrix[rowi] = new Array(...temp);
+          dommatrix[rowi] = _.cloneDeep(temp);
           for (let row2i = 0; row2i < dommatrix.length; row2i++) {
             if (rowi != row2i && ndTerms[row2i] != undefined) {
               let temp = [];
@@ -194,7 +189,7 @@ function remRedundancy(l1: Array<Array<number>>, terms: Array<Array<number>>) {
                   temp.push(dommatrix[row2i][ndPrimeImplicants[_]]);
                 }
               }
-              dommatrix[row2i] = new Array(...temp);
+              dommatrix[row2i] = _.cloneDeep(temp);
 
               let tBool = true;
               for (let i = 0; i < dommatrix[rowi].length; i++) {
@@ -223,7 +218,7 @@ function remRedundancy(l1: Array<Array<number>>, terms: Array<Array<number>>) {
               temp.push(col[oldNdTerms[_]]);
             }
           }
-          col = new Array(...temp);
+          col = _.cloneDeep(temp);
           let l1Range = _.range(0, l1.length, 1);
           for (let col2i = 0; col2i < l1Range.length; col2i++) {
             if (coli != col2i && ndPrimeImplicants[col2i] != undefined) {
@@ -238,7 +233,7 @@ function remRedundancy(l1: Array<Array<number>>, terms: Array<Array<number>>) {
                   temp.push(col2[oldNdTerms[_]]);
                 }
               }
-              col2 = new Array(...temp);
+              col2 = _.cloneDeep(temp);
 
               let tBool = true;
               for (let i = 0; i < col.length; i++) {
@@ -261,7 +256,7 @@ function remRedundancy(l1: Array<Array<number>>, terms: Array<Array<number>>) {
         temp.push(l1[ndPrimeImplicants[_]]);
       }
     }
-    l1 = new Array(...temp);
+    l1 = _.cloneDeep(temp);
     return l1;
   } else {
     return [];
@@ -293,9 +288,9 @@ function convertToVarsSOP(minterm: number[], variables: string[]) {
 function convertToVarsPOS(maxterm: number[], variables: string[]) {
   let temp = [];
   for (let i = 0; i < maxterm.length; i++) {
-    if (maxterm[i] == 0) {
+    if (maxterm[i] == 1) {
       temp.push('not ' + variables[i]);
-    } else if (maxterm[i] == 1) {
+    } else if (maxterm[i] == 0) {
       temp.push(variables[i]);
     }
   }

@@ -4,6 +4,7 @@ import { buildOrNode, Or } from "../logic/or";
 import { buildNotNode, Not } from "../logic/not";
 import { buildLiteralNode, Literal } from "../logic/literal";
 import { Xor } from "../logic/xor";
+import _ = require("lodash");
 
 
 //parse tht query string to typescript pojo
@@ -42,7 +43,7 @@ export function getTruthTable(variables: string[], expression: And | Or | Not | 
       map.set(variables[j], element == 0 ? false : true);
     }
     if (getTruthValue(expression, map) == true) {
-      truthTable.push(new Array<number>(...fullList[i]));
+      truthTable.push(_.cloneDeep(fullList[i]));
     }
   }
   return truthTable;
@@ -71,7 +72,7 @@ export function fullPerm(length: number) {
 
 function sift(length: number, list: Array<number>, fullList: Array<Array<number>>) {
   if (list.length == length) {
-    fullList.push(new Array(...list));
+    fullList.push(_.cloneDeep(list));
     return;
   }
 
@@ -99,6 +100,7 @@ export function toOrList(lists: string[]) {
   }
   temp += lists[0];
   if (lists.length == 1) {
+    temp = '(' + temp + ')';
     return temp;
   }
   for (let i = 1; i < lists.length; i++) {
@@ -116,6 +118,7 @@ export function toAndList(lists: string[]) {
   }
   temp += lists[0];
   if (lists.length == 1) {
+    temp = '(' + temp + ')';
     return temp;
   }
   for (let i = 1; i < lists.length; i++) {

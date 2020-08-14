@@ -13,8 +13,8 @@ export function simplyfyLogic(expression: string, form: string, limit: number) {
   }
   let predicatesSet = findPredicates(expr);
   let predicates = Array.from(predicatesSet);
-  if (predicates.length > limit) {
-    throw new Error('predicates size is larger than limit value');
+  if (predicates.length >= limit) {
+    throw new Error('predicates size is euqal or larger than limit value');
   }
   //get truthtable with minterms
   let minterms = getTruthTable(predicates, expr);
@@ -33,11 +33,12 @@ export function SOPform(variables: string[], minterms: any[]) {
   }
   //get final simplyfied table
   let essential = remRedundancy(newTerm, minterms);
-  console.log(essential);
+  // console.log(essential);
 
   let andList = [];
   for (let i = 0; i < essential.length; i++) {
-    andList.push(convertToVarsSOP(essential[i], variables));
+    let temp = convertToVarsSOP(essential[i], variables);
+    andList.push(temp.substring(1,temp.length - 1));
   }
   //return string like '(A and B) or (C and D)'
   let result = toOrList(andList);
@@ -58,19 +59,18 @@ export function POSform(variables: string[], minterms: any[]) {
 
   let oldTerm = [];
   let newTerm = _.cloneDeep(maxterms);
-  while (JSON.stringify(newTerm) != JSON.stringify(oldTerm)) {
+  while (!_.isEqual(oldTerm,newTerm)) {
     oldTerm = _.cloneDeep(newTerm);
     newTerm = _.cloneDeep(simplyfiedPairs(oldTerm));
   }
-  // console.log(oldTerm);
 
   //get final simplyfied table
   let essential = remRedundancy(newTerm, maxterms);
-  console.log(essential);
 
   let orList = [];
   for (let i = 0; i < essential.length; i++) {
-    orList.push(convertToVarsPOS(essential[i], variables));
+    let temp = convertToVarsPOS(essential[i], variables);
+    orList.push(temp.substring(1,temp.length - 1));
   }
   //return string like '(A or B) and (C or D)'
   let result = toAndList(orList);

@@ -118,7 +118,7 @@ EscapedSpecialCharacter
   = '\\' char:SpecialCharacter { return char; }
   
 SpecialCharacter
-  = [\\():<>"*{}]
+  = [\\():<>"{}]
 
 EscapedKeyword
   = '\\' keyword:('or'i / 'and'i / 'not'i) { return keyword; }

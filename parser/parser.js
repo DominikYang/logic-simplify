@@ -217,8 +217,8 @@ function peg$parse(input, options) {
       peg$c49 = "\\n",
       peg$c50 = peg$literalExpectation("\\n", false),
       peg$c51 = function() { return '\n'; },
-      peg$c52 = /^[\\():<>"*{}]/,
-      peg$c53 = peg$classExpectation(["\\", "(", ")", ":", "<", ">", "\"", "*", "{", "}"], false, false),
+      peg$c52 = /^[\\():<>"{}]/,
+      peg$c53 = peg$classExpectation(["\\", "(", ")", ":", "<", ">", "\"", "{", "}"], false, false),
       peg$c54 = function(keyword) { return keyword; },
 
       peg$currPos          = 0,

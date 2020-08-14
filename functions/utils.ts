@@ -86,7 +86,7 @@ function sift(length: number, list: Array<number>, fullList: Array<Array<number>
 export function contains(arr:Array<Array<number>>,a:Array<number>) {
   for (let i = 0; i < arr.length; i++) {
     const element = arr[i];
-    if (JSON.stringify(element) == JSON.stringify(a)) {
+    if (_.isEqual(element,a)) {
       return true;
     }
   }

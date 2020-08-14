@@ -6,28 +6,28 @@ import { Not } from "../logic/not";
 
 describe('test basic functions', () => {
   test('basic or function', () => {
-    console.log('basic or');
+    // console.log('basic or');
     let testVar = 'A:foo or B:baz';
     let expectResult = new Or(new Literal('A : foo'), new Literal('B : baz'));
     expect(parseString(testVar)).toEqual(expectResult);
   })
 
   test('basic and function', () => {
-    console.log('basic and');
+    // console.log('basic and');
     let testVar = 'A:foo and B:baz';
     let expectResult = new And(new Literal('A : foo'), new Literal('B : baz'));
     expect(parseString(testVar)).toEqual(expectResult);
   })
 
   test('basic not function', () => {
-    console.log('basic not');
+    // console.log('basic not');
     let testVar = 'not A:foo';
     let expectResult = new Not(new Literal('A : foo'));
     expect(parseString(testVar)).toEqual(expectResult);
   })
 
   test('single literal', () => {
-    console.log('single literal');
+    // console.log('single literal');
     let testVar = 'A:foo';
     let expectResult = new Literal('A : foo');
     expect(parseString(testVar)).toEqual(expectResult);
@@ -39,28 +39,28 @@ describe('test basic functions', () => {
 describe('test functions with brancket', () => {
 
   test('basic or function with bracket', () => {
-    console.log('basic or with bracket');
+    // console.log('basic or with bracket');
     let testVar = 'A:foo or B:baz';
     let expectResult = new Or(new Literal('A : foo'), new Literal('B : baz'));
     expect(parseString(testVar)).toEqual(expectResult);
   })
 
   test('basic and function with bracket', () => {
-    console.log('basic and with bracket');
+    // console.log('basic and with bracket');
     let testVar = '(A:foo and B:baz)';
     let expectResult = new And(new Literal('A : foo'), new Literal('B : baz'));
     expect(parseString(testVar)).toEqual(expectResult);
   })
 
   test('basic not function with bracket', () => {
-    console.log('basic not with bracket');
+    // console.log('basic not with bracket');
     let testVar = 'not (A:foo)';
     let expectResult = new Not(new Literal('A : foo'));
     expect(parseString(testVar)).toEqual(expectResult);
   })
 
   test('single literal with bracket', () => {
-    console.log('single literal with bracket');
+    // console.log('single literal with bracket');
     let testVar = '(A:foo)';
     let expectResult = new Literal('A : foo');
     expect(parseString(testVar)).toEqual(expectResult);
@@ -70,28 +70,27 @@ describe('test functions with brancket', () => {
 describe('test functions with brancket', () => {
 
   test('basic or function with bracket', () => {
-    console.log('basic or with bracket');
+    // console.log('basic or with bracket');
     let testVar = 'A:foo or B:baz';
     let expectResult = new Or(new Literal('A : foo'), new Literal('B : baz'));
     expect(parseString(testVar)).toEqual(expectResult);
   })
 
   test('basic and function with bracket', () => {
-    console.log('basic and with bracket');
+    // console.log('basic and with bracket');
     let testVar = '(A:foo and B:baz)';
     let expectResult = new And(new Literal('A : foo'), new Literal('B : baz'));
     expect(parseString(testVar)).toEqual(expectResult);
   })
 
   test('basic not function with bracket', () => {
-    console.log('basic not with bracket');
+    // console.log('basic not with bracket');
     let testVar = 'not (A:foo)';
     let expectResult = new Not(new Literal('A : foo'));
     expect(parseString(testVar)).toEqual(expectResult);
   })
 
   test('single literal with bracket', () => {
-    console.log('single literal with bracket');
     let testVar = '(A:foo)';
     let expectResult = new Literal('A : foo');
     expect(parseString(testVar)).toEqual(expectResult);
@@ -111,5 +110,6 @@ describe('complex functions test', () => {
     let expectResult = new Not(new And(new Literal('A : foo'),new Or(new Not(new Literal('B : baz')),new And(new Literal('C : ker'),new Literal('D : mes')))));
   })
 })
+
 
 

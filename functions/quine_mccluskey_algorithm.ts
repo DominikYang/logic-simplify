@@ -13,9 +13,9 @@ export function simplyfyLogic(expression: string, form: string, limit: number) {
   }
   let predicatesSet = findPredicates(expr);
   let predicates = Array.from(predicatesSet);
-  if (predicates.length >= limit) {
-    throw new Error('predicates size is euqal or larger than limit value');
-  }
+  // if (predicates.length >= limit) {
+  //   throw new Error('predicates size is euqal or larger than limit value');
+  // }
   //get truthtable with minterms
   let minterms = getTruthTable(predicates, expr);
   if (form == 'dnf') {

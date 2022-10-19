@@ -1,4 +1,4 @@
-import { toCNF, toDNF } from ".";
+import { toCNF, toDNF } from "..";
 
 describe('function runtime test', () => {
   // test('eight predicates run 100 times', () => {
@@ -19,13 +19,13 @@ describe('function runtime test', () => {
   test('seven predicates run 100 times', () => {
     console.time('CNF seven predicates run 100 times');
     for (let i = 0; i < 100; i++) {
-      expect(toCNF('(A:foo and B:baz and C:qer and D:ker and E:frind and F:par) or G:gar')).toEqual(expect.any(String));
+      expect(toCNF('(A and B and C and D and E and F) or G')).toEqual(expect.any(String));
     }
     console.timeEnd('CNF seven predicates run 100 times');
 
     console.time('DNF seven predicates run 100 times');
     for (let i = 0; i < 100; i++) {
-      expect(toDNF('(A:foo or B:baz or C:qer or D:ker or E:frind or F:par) and G:gar')).toEqual(expect.any(String));
+      expect(toDNF('(A or B or C or D or E or F) and G')).toEqual(expect.any(String));
     }
     console.timeEnd('DNF seven predicates run 100 times');
   });
@@ -33,13 +33,13 @@ describe('function runtime test', () => {
   test('six predicates run 100 times', () => {
     console.time('CNF six predicates run 100 times');
     for (let i = 0; i < 100; i++) {
-      expect(toCNF('(A:foo and B:baz and C:qer and D:ker and E:frind) or F:par')).toEqual(expect.any(String));
+      expect(toCNF('(A and B and C and D and E) or F')).toEqual(expect.any(String));
     }
     console.timeEnd('CNF six predicates run 100 times');
 
     console.time('DNF six predicates run 100 times');
     for (let i = 0; i < 100; i++) {
-      expect(toDNF('(A:foo or B:baz or C:qer or D:ker or E:frind) and F:par')).toEqual(expect.any(String));
+      expect(toDNF('(A or B or C or D or E) and F')).toEqual(expect.any(String));
     }
     console.timeEnd('DNF six predicates run 100 times');
   });

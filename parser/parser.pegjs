@@ -31,18 +31,13 @@ SubExpression
   / ValueExpression
 
 ValueExpression
-  = FieldValueExpression
-
-Field "fieldName"
-  = Literal
+  =  value:Literal{
+    return buildLiteralNode(value);
+  }
 
 Literal "literal"
   = QuotedString / UnquotedLiteral
 
-FieldValueExpression
-  = field:Field Space* ':' Space* partial:ListOfValues {
-    return buildLiteralNode(field + ' : ' + partial);
-  }
 
 ListOfValues
   = '(' Space* partial:OrListOfValues trailing:OptionalSpace ')' {

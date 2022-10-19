@@ -2,7 +2,7 @@
     "compilerOptions": {
       "target": "es5",
       "module": "commonjs",
-      "outDir": "out",
+      "outDir": "logic_simplify",
       "sourceMap": true
     }
   }
